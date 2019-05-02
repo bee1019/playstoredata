@@ -1,0 +1,53 @@
+<!doctype html>
+<meta charset ="utf-8">
+<html>
+<head>
+  <title>Correlation Matrix</title>
+  <h1>Correlation Matrix</h1>
+   <link rel="stylesheet" type="text/css" href="corrStyle.css"/>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+</head>
+<body>
+  <div style = "display:inline-block;" id = "legend"></div>
+  <div style = "display:inline-block; float:left" id = "container"></div>
+<script src = "corrMain.js"></script>
+<script>
+
+  var correlationMatrix = [[1, 0.133248727, 0.063507451, 0.113192036, 0.050633319],
+                          [0.133248727, 1, 0.226620886, 0.631229518, 0.037567781],
+                          [0.063507451, 0.226620886, 1, 0.237717373, 0.154172272],
+                          [0.113192036, 0.631229518, 0.237717373, 1, 0.071103093],
+                          [0.050633319, 0.037567781, 0.154172272, 0.071103093, 1]];
+
+  var labels = ['AppRating', 'AppReviews', 'AppSize', 'NumberOfInstallations', 'CurrentAndroidVersion'];
+
+  Matrix({
+    container : '#container',
+    data      : correlationMatrix,
+    labels    : labels,
+    start_color : '#1374FF',
+    end_color : '#FF2813'
+  });
+
+</script>
+
+<p>
+  Select a Visualization to View<br>
+  <select name="menu1" id="menu1">
+  <option selected disabled>Select a Visualization</option>
+  <option value="MainHomePage.html">Homepage</option>
+  <option value="Scatterplot.html">Bivariate Scatterplot</option>
+  <option value="Scatter_Matrix.html">Scatterplot Matrix</option>
+  <option value="Scree.html">PCA Scree Plot</option>
+  <option value="GPS_Biplot.html">Biplot</option>
+  <option value="Euclidean_MDS.html">MDS Plot ~ Euclidean Distance</option>
+  <option value="Correlation_MDS.html">MDS Plot ~ 1 - |Correlation| Distance</option>
+  </select>
+  <script type="text/javascript">
+   var urlmenu = document.getElementById( 'menu1' );
+   urlmenu.onchange = function() {
+        window.open(this.options[ this.selectedIndex ].value, '_self');
+   };
+  </script>
+</body>
+</html>

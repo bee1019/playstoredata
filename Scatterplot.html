@@ -1,0 +1,165 @@
+<!doctype html>
+<meta charset ="utf-8">
+<html>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<body>
+
+  <script>
+
+    var margin = {top : 20, right : 400, bottom : 40, left : 90},
+    width = 1400 - margin.left - margin.right,
+    height = 680 - margin.top - (margin.bottom - 20);
+
+    var x = d3.scale.linear().range([0, width]);
+    var y = d3.scale.linear().range([height, 0]);
+
+    var color = d3.scale.category10();
+
+    var xAxis = d3.svg.axis().scale(x).orient("bottom")
+      .tickFormat(function(d) {return d;})
+      .ticks(10);
+    var yAxis = d3.svg.axis().scale(y).orient("left")
+      .tickFormat(function(d) {return d;})
+      .ticks(10);
+
+    var axisName = ["App Rating", "App Reviews", "App Size", "Number Of Intallations", "Current Android Version"]
+
+    var svg = d3.select("body").append("svg")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    d3.csv("GPS_DATA.csv", function(error, data){
+      if (error){
+        throw error;
+      }
+
+      data.forEach(function(d) {
+        d.AppRating = +d.AppRating;
+        d.AppReviews = +d.AppReviews;
+        d.AppSize = +d.AppSize;
+        d.NumberOfInstallations = +d.NumberOfInstallations;
+        d.CurrentAndroidVersion = +d.CurrentAndroidVersion;
+      });
+
+      x.domain([
+        d3.min(data, function(d) {return d.AppRating;}),
+        d3.max(data, function(d) {return d.AppRating;})
+      ])
+
+      y.domain([
+        d3.min(data, function(d) {return d.AppRating;}),
+        d3.max(data, function(d) {return d.AppRating;})
+      ])
+
+      svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis)
+
+      svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+
+      var circles = svg.selectAll(".dot")
+        .data(data)
+        .enter().append("circle")
+        .attr("class", "dot")
+        .attr("r", 5)
+        .attr("cx", function(d) {return x(d.AppRating);})
+        .attr("cy", function(d) {return y(d.AppRating);})
+        .style("fill", function(d) {return color(d.Category);});
+
+      var legend = svg.selectAll(".legend")
+        .data(color.domain())
+        .enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d,i) {return "translate(0," + i * 20 + ")";});
+
+      legend.append("rect")
+        .attr("x", width + 240)
+        .attr("width", 5)
+        .attr("height", 5)
+        .style("fill", color);
+
+      legend.append("text")
+        .style("font-size", "8px")
+        .attr("x", width + 224)
+        .attr("y", 9)
+        .attr("dy", "-.30em")
+        .style("text-anchor", "end")
+        .text(function(d) {return d;});
+
+      d3.select("[name=xAX]").on("change", function() {
+        xAxy = this.value;
+        console.log(xAxy);
+        x.domain([
+          d3.min(data, function(d) {return d[xAxy];}),
+          d3.max(data, function(d) {return d[xAxy];})
+        ])
+        svg.select(".x.axis").transition().duration(500).call(xAxis);
+        svg.selectAll(".dot").transition().duration(500)
+          .attr("cx", function(d) {return x(d[xAxy]);})
+        svg.selectAll(".x.axis").selectAll("text.label")
+          .text(axisName[xAxy]);
+      });
+
+      d3.select("[name=yAX]").on("change", function() {
+        yAxy = this.value;
+        console.log(yAxy);
+        y.domain([
+          d3.min(data, function(d) {return d[yAxy];}),
+          d3.max(data, function(d) {return d[yAxy];})
+        ])
+        svg.select(".y.axis").transition().duration(500).call(yAxis);
+        svg.selectAll(".dot").transition().duration(500)
+          .attr("cy", function(d) {
+            return y(d[yAxy]);
+          });
+        svg.selectAll(".y.axis").selectAll("text.label")
+          .text(axisName[yAxy]);
+      });
+
+    });
+
+  </script>
+
+  <div id = "label"><b>Select X-Axis:<b></div>
+    <select name = "xAX" id = "xAXs">
+      <option value = "AppRating">App Rating</option>
+      <option value = "AppReviews">App Reviews</option>
+      <option value = "AppSize">App Size</option>
+      <option value = "NumberOfInstallations">Number of Installations</option>
+      <option value = "CurrentAndroidVersion">Current Android Version</option>
+    </select>
+
+  <div id = "label2"><b>Select Y-Axis:<b></div>
+    <select name = "yAX" id = "yAXs">
+      <option value = "AppRating">App Rating</option>
+      <option value = "AppReviews">App Reviews</option>
+      <option value = "AppSize">App Size</option>
+      <option value = "NumberOfInstallations">Number of Installations</option>
+      <option value = "CurrentAndroidVersion">Current Android Version</option>
+    </select>
+
+    <p>
+      Select a Visualization to View<br>
+      <select name="menu1" id="menu1">
+      <option selected disabled>Select a Visualization</option>
+      <option value="MainHomePage.html">Homepage</option>
+      <option value="Correlation.html">Correlation Matrix</option>
+      <option value="Scatter_Matrix.html">Scatterplot Matrix</option>
+      <option value="Scree.html">PCA Scree Plot</option>
+      <option value="GPS_Biplot.html">Biplot</option>
+      <option value="Euclidean_MDS.html">MDS Plot ~ Euclidean Distance</option>
+      <option value="Correlation_MDS.html">MDS Plot ~ 1 - |Correlation| Distance</option>
+      </select>
+      <script type="text/javascript">
+       var urlmenu = document.getElementById( 'menu1' );
+       urlmenu.onchange = function() {
+            window.open(this.options[ this.selectedIndex ].value, '_self');
+       };
+      </script>
+</body>
+</html>
